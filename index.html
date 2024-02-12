@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script>
+    function formatCents(x) {
+        var cents = Math.floor(x * 100 + 0.5);
+        var dollars = Math.floor(cents / 100);
+        cents = cents - dollars * 100;
+        if (cents < 10) {
+            cents = "0" + cents;
+        }
+        return "" + dollars + "." + cents;
+    }
+
+    function calculate(event) {
+        let form = event.target;
+        let margin = parseFloat(form[0].value);
+        let probability = parseFloat(form[1].value);
+        var principal_str = form[2].value;
+        if (principal_str[0] == '$') {
+            principal_str = principal_str.substring(1);
+        }
+        let principal = parseFloat(principal_str);
+
+        let expected_loss = (100 - probability) * principal / 100;
+        let expected_gain = probability * (margin - 1) * principal / 100;
+
+
+        document.getElementById("output1").innerText = "IF you won " + probability + "% of the time, THEN";
+
+        document.getElementById("output2").innerText = "" + (100 - probability) + "% of the time you will lose $" + principal + ". This means over lots of bets like this, you'll LOSE an average of $" + formatCents(expected_loss) + " each game you bet on.";
+
+        document.getElementById("output3").innerText = "" + probability + "% of the time you will win $" + formatCents(margin - 1) * principal + ". This means over lots of bets like this, you'll also GAIN an average of $" + formatCents(expected_gain) + " each game you bet on.";
+
+        if (expected_gain > expected_loss) {
+            document.getElementById("output4").innerText = "This means in the long run, you'll GAIN about $" + formatCents(expected_gain - expected_loss) + " each game you bet on.";
+        } else {
+            document.getElementById("output4").innerText = "This means in the long run, you'll LOSE about $" + formatCents(expected_loss - expected_gain) + " each game you bet on.";
+        }
+    }
+
+    async function updateButtons() {
+        let form = document.querySelector("form");
+        form.addEventListener("submit", calculate);
+    }
+
+    window.onload = updateButtons;
+</script>
+
+<h2>Betting Margins Calculator</h2>
+
+<form onsubmit="return false;" accept-charset="utf-8">
+    <p>What margin are you being offered? (e.g. 1.36, </p>
+    <input type="text" name="margin"/>
+    <p>What probability do you BELIEVE you have of winning? (e.g. 70%)</p>
+    <input type="text" name="probability"/>
+    <p>How much are you considering betting?</p>
+    <input type="text" name="principal"/>
+    <p>Click to calculate your expected earnings:</p>
+    <input type="submit" value="Calculate!"/>
+</form>
+    <p id="output1"></p>
+    <p id="output2"></p>
+    <p id="output3"></p>
+    <p id="output4"></p>
+
+</body>
+</html>
+
